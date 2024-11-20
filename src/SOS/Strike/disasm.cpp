@@ -1153,6 +1153,22 @@ LPCSTR LOONGARCH64Machine::s_GCRegs[30]       = {"r0", "ra", "tp", "a0", "a1", "
 LPCSTR LOONGARCH64Machine::s_SPName           = "sp";
 #endif // SOS_TARGET_LOONGARCH64
 
+#ifdef SOS_TARGET_S390X
+///
+/// S390XMachine implementation
+///
+//TODO: REMOVE after review, Added to address below issue.
+//root@t8375036:~# echo _ZN12S390XMachine8s_SPNameE | c++filt
+//S390XMachine::s_SPName
+LPCSTR S390XMachine::s_DumpStackHeading = "ChildFP  RetAddr  Caller, Callee\n";
+LPCSTR S390XMachine::s_DSOHeading       = "SP/REG  Object   Name\n";
+// Excluding r11, r14 and r15 , which is are used for fp, lr, sp respectively.
+LPCSTR S390XMachine::s_GCRegs[13]       = {"r0", "r1", "r2",  "r3",  "r4",  "r5",  "r6",
+                                         "r7", "r8", "r9",  "r10", "r12", "r13"};
+LPCSTR S390XMachine::s_SPName           = "r15";
+
+#endif // SOS_TARGET_S390X
+
 //
 // GCEncodingInfo class member implementations
 //

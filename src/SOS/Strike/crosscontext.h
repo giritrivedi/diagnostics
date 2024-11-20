@@ -383,6 +383,56 @@ typedef struct {
 
 } LOONGARCH64_CONTEXT;
 
+///S390X CONTEXT
+typedef struct {
+    DWORD ContextFlags;
+    union {
+        DWORD64 Gpr[16];
+        struct {
+            DWORD64 R0;
+            DWORD64 R1;
+            DWORD64 R2;
+            DWORD64 R3;
+            DWORD64 R4;
+            DWORD64 R5;
+            DWORD64 R6;
+            DWORD64 R7;
+            DWORD64 R8;
+            DWORD64 R9;
+            DWORD64 R10;
+            DWORD64 R11;
+            DWORD64 R12;
+            DWORD64 R13;
+            DWORD64 R14;
+            DWORD64 R15;
+        };
+    };
+    union {
+        DWORD64 Fpr[16];
+        struct {
+            DWORD64 F0;
+            DWORD64 F1;
+            DWORD64 F2;
+            DWORD64 F3;
+            DWORD64 F4;
+            DWORD64 F5;
+            DWORD64 F6;
+            DWORD64 F7;
+            DWORD64 F8;
+            DWORD64 F9;
+            DWORD64 F10;
+            DWORD64 F11;
+            DWORD64 F12;
+            DWORD64 F13;
+            DWORD64 F14;
+            DWORD64 F15;
+        };
+    };
+    DWORD64 PSWMask;
+    DWORD64 PSWAddr;
+
+} S390X_CONTEXT;
+
 typedef struct _CROSS_PLATFORM_CONTEXT {
 
     _CROSS_PLATFORM_CONTEXT() {}
@@ -394,6 +444,7 @@ typedef struct _CROSS_PLATFORM_CONTEXT {
         ARM64_CONTEXT     Arm64Context;
         RISCV64_CONTEXT   RiscV64Context;
         LOONGARCH64_CONTEXT   LoongArch64Context;
+	S390X_CONTEXT     S390XContext;
     };
 
 } CROSS_PLATFORM_CONTEXT, *PCROSS_PLATFORM_CONTEXT;

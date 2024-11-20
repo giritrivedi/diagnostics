@@ -58,6 +58,8 @@
 #define DTCONTEXT_IS_LOONGARCH64
 #elif defined (TARGET_RISCV64)
 #define DTCONTEXT_IS_RISCV64
+#elif defined (TARGET_S390X)
+#define DTCONTEXT_IS_S390X
 #endif
 
 #define CONTEXT_AREA_MASK 0xffff
@@ -613,6 +615,107 @@ typedef struct DECLSPEC_ALIGN(16) {
 } DT_CONTEXT;
 
 static_assert(sizeof(DT_CONTEXT) == sizeof(T_CONTEXT), "DT_CONTEXT size must equal the T_CONTEXT size");
+
+#elif defined(DTCONTEXT_IS_S390X)
+// There is no context for s390x defined in winnt.h,
+// so we re-use the amd64 values.
+#define CONTEXT_S390X   0x100000
+
+#define CONTEXT_CONTROL (CONTEXT_S390X | 0x1L)
+#define CONTEXT_INTEGER (CONTEXT_S390X | 0x2L)
+#define CONTEXT_FLOATING_POINT  (CONTEXT_S390X | 0x4L)
+
+#define CONTEXT_FULL (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_FLOATING_POINT)
+
+#define CONTEXT_ALL (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_FLOATING_POINT)
+
+#define CONTEXT_EXCEPTION_ACTIVE 0x8000000
+#define CONTEXT_SERVICE_ACTIVE 0x10000000
+#define CONTEXT_EXCEPTION_REQUEST 0x40000000
+#define CONTEXT_EXCEPTION_REPORTING 0x80000000
+
+//typedef struct DECLSPEC_ALIGN(8) _CONTEXT {
+typedef struct DECLSPEC_ALIGN(8) {
+
+    //
+    // Control Registers
+    //
+    //TODO : I think we need to remove below code representing sp, lr and pc .
+    // since other registers point to the same
+    // For example,
+    // FP ( Frame Pointer ) - R11
+    // LR ( Link Register ) - R14
+    // SP ( Stack Pointer ) - R15
+
+    DWORD Sp;
+    DWORD Lr;
+    DWORD Pc;
+    DWORD Cpsr;
+
+    DWORD ContextFlags;
+
+    //
+    // Integer registers.
+    //
+
+
+    union {
+        DWORD64 Gpr[16];
+        struct {
+            DWORD64 R0;
+            DWORD64 R1;
+            DWORD64 R2;
+            DWORD64 R3;
+            DWORD64 R4;
+            DWORD64 R5;
+            DWORD64 R6;
+            DWORD64 R7;
+            DWORD64 R8;
+            DWORD64 R9;
+            DWORD64 R10;
+            DWORD64 R11;
+            DWORD64 R12;
+            DWORD64 R13;
+            DWORD64 R14;
+            DWORD64 R15;
+        };
+    };
+
+    //
+    // Floating-point registers.
+    //
+
+    union {
+        DWORD64 Fpr[16];
+        struct {
+            DWORD64 F0;
+            DWORD64 F1;
+            DWORD64 F2;
+            DWORD64 F3;
+            DWORD64 F4;
+            DWORD64 F5;
+            DWORD64 F6;
+            DWORD64 F7;
+            DWORD64 F8;
+            DWORD64 F9;
+            DWORD64 F10;
+            DWORD64 F11;
+            DWORD64 F12;
+            DWORD64 F13;
+            DWORD64 F14;
+            DWORD64 F15;
+        };
+    };
+
+    //
+    // Control registers.
+    //
+
+    DWORD64 PSWMask;
+    DWORD64 PSWAddr;
+
+//} CONTEXT, *PCONTEXT, *LPCONTEXT;
+} DT_CONTEXT;
 
 #else
 #error Unsupported platform

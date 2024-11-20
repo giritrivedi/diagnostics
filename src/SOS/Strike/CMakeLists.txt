@@ -25,6 +25,9 @@ endif()
 if(CLR_CMAKE_TARGET_ARCH_ARM64)
     message(STATUS "CLR_CMAKE_TARGET_ARCH_ARM64")
 endif()
+if(CLR_CMAKE_TARGET_ARCH_S390X)
+       message(STATUS "CLR_CMAKE_TARGET_ARCH_S390X")
+endif()
 
 if(CLR_CMAKE_HOST_ARCH_AMD64)
   message(STATUS "CLR_CMAKE_HOST_ARCH_AMD64")
@@ -60,8 +63,13 @@ elseif(CLR_CMAKE_HOST_ARCH_RISCV64)
 elseif(CLR_CMAKE_HOST_ARCH_LOONGARCH64)
   add_definitions(-DSOS_TARGET_LOONGARCH64=1)
   add_definitions(-D_TARGET_WIN64_=1)
+elseif(CLR_CMAKE_HOST_ARCH_S390X)
+  message(STATUS "CLR_CMAKE_HOST_ARCH_S390X")
+  add_definitions(-DSOS_TARGET_S390X=1)
+  add_definitions(-D_TARGET_S390X_=1)
+  add_definitions(-DDBG_TARGET_64BIT)
+  add_definitions(-DDBG_TARGET_S390X=1)
 endif()
-
 add_definitions(-DSTRIKE)  
 
 include_directories(${ROOT_DIR}/src/SOS/inc)
@@ -223,6 +231,10 @@ elseif(CLR_CMAKE_HOST_ARCH_RISCV64)
 elseif(CLR_CMAKE_HOST_ARCH_LOONGARCH64)
   set(SOS_SOURCES_ARCH
     disasmLOONGARCH64.cpp
+  )
+elseif(CLR_CMAKE_HOST_ARCH_S390X)
+  set(SOS_SOURCES_ARCH
+    disasmS390x.cpp
   )
 endif()
 

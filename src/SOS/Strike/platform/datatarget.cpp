@@ -99,7 +99,7 @@ HRESULT STDMETHODCALLTYPE
 DataTarget::GetPointerSize(
     /* [out] */ ULONG32 *size)
 {
-#if defined(SOS_TARGET_AMD64) || defined(SOS_TARGET_ARM64) || defined(SOS_TARGET_MIPS64) || defined(SOS_TARGET_RISCV64) || defined(SOS_TARGET_LOONGARCH64)
+#if defined(SOS_TARGET_AMD64) || defined(SOS_TARGET_ARM64) || defined(SOS_TARGET_MIPS64) || defined(SOS_TARGET_RISCV64) || defined(SOS_TARGET_LOONGARCH64) || defined (SOS_TARGET_S390X)
     *size = 8;
 #elif defined(SOS_TARGET_ARM) || defined(SOS_TARGET_X86)
     *size = 4;

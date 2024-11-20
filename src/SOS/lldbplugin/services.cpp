@@ -235,6 +235,8 @@ LLDBServices::VirtualUnwind(
     DWORD64 spToFind = dtcontext->Sp;
 #elif TARGET_LOONGARCH64
     DWORD64 spToFind = dtcontext->Sp;
+#elif DBG_TARGET_S390X
+    DWORD64 spToFind = dtcontext->Sp;
 #else
 #error "spToFind undefined for this platform"
 #endif
@@ -462,6 +464,8 @@ LLDBServices::GetProcessorType(
     *type = IMAGE_FILE_MACHINE_RISCV64;
 #elif TARGET_LOONGARCH64
     *type = IMAGE_FILE_MACHINE_LOONGARCH64;
+#elif DBG_TARGET_S390X
+    *type = IMAGE_FILE_MACHINE_UNKNOWN;
 #else
 #error "Unsupported target"
 #endif

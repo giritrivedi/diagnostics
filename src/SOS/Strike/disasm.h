@@ -538,6 +538,70 @@ private:
 
 #endif // SOS_TARGET_LOONGARCH64
 
+#ifdef SOS_TARGET_S390X
+/// S390X Machine specific code
+class S390XMachine : public IMachine
+{
+public:
+    typedef S390X_CONTEXT TGT_CTXT;
+    static IMachine* GetInstance()
+    { static S390XMachine s_S390XMachineInstance; return &s_S390XMachineInstance; }
+
+    ULONG GetPlatform()             const { return IMAGE_FILE_MACHINE_UNKNOWN; }
+    ULONG GetContextSize()          const { return sizeof(S390X_CONTEXT); }
+    ULONG GetFullContextFlags()     const { return 0x0100000BL; }
+    void SetContextFlags(BYTE* context, ULONG32 contextFlags)   { ((S390X_CONTEXT*)context)->ContextFlags = contextFlags; };
+
+    virtual void Unassembly(
+                TADDR IPBegin,
+                TADDR IPEnd,
+                TADDR IPAskedFor,
+                TADDR GCStressCodeCopy,
+                GCEncodingInfo *pGCEncodingInfo,
+                SOSEHInfo *pEHInfo,
+                BOOL bSuppressLines,
+                BOOL bDisplayOffsets,
+                std::function<void(ULONG*, UINT*, BYTE*)> displayIL) const;
+    virtual void IsReturnAddress(
+                TADDR retAddr,
+                TADDR* whereCalled) const;
+    virtual BOOL GetExceptionContext (
+                TADDR stack,
+                TADDR PC,
+                TADDR *cxrAddr,
+                CROSS_PLATFORM_CONTEXT * cxr,
+                TADDR *exrAddr,
+                PEXCEPTION_RECORD exr) const;
+
+    // retrieve stack pointer, frame pointer, and instruction pointer from the target context
+    virtual TADDR GetSP(const CROSS_PLATFORM_CONTEXT & ctx) const  { return ctx.S390XContext.R15; }
+    virtual TADDR GetBP(const CROSS_PLATFORM_CONTEXT & ctx) const  { return ctx.S390XContext.R11; }
+    virtual TADDR GetIP(const CROSS_PLATFORM_CONTEXT & ctx) const  { return ctx.S390XContext.PSWAddr; }
+    virtual void  FillSimpleContext(StackTrace_SimpleContext * dest, LPVOID srcCtx) const;
+    virtual void  FillTargetContext(LPVOID destCtx, LPVOID srcCtx, int idx = 0) const;
+    virtual LPCSTR GetDumpStackHeading() const          { return s_DumpStackHeading; }
+    virtual LPCSTR GetDumpStackObjectsHeading() const   { return s_DSOHeading; }
+    virtual LPCSTR GetSPName() const                    { return s_SPName; }
+    virtual void GetGCRegisters(LPCSTR** regNames, unsigned int* cntRegs) const
+    { _ASSERTE(cntRegs != NULL); *regNames = s_GCRegs; *cntRegs = ARRAY_SIZE(s_GCRegs);}
+
+    virtual void DumpGCInfo(GCInfoToken gcInfoToken, unsigned methodSize, printfFtn gcPrintf, bool encBytes, bool bPrintHeader) const;
+
+    int StackWalkIPAdjustOffset() const { return 4; }
+
+private:
+    S390XMachine()  {}
+    ~S390XMachine() {}
+    S390XMachine(const S390XMachine& machine);      // undefined
+    S390XMachine & operator=(const S390XMachine&);  // undefined
+
+    static LPCSTR     s_DumpStackHeading;
+    static LPCSTR     s_DSOHeading;
+    static LPCSTR     s_GCRegs[13];
+    static LPCSTR     s_SPName;
+
+};
+#endif // SOS_TARGET_S390X
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
@@ -646,5 +710,21 @@ inline void LOONGARCH64Machine::FillTargetContext(LPVOID destCtx, LPVOID srcCtx,
     *dest = *(TGT_CTXT*)srcCtx;
 }
 #endif // SOS_TARGET_LOONGARCH64
+
+#ifdef SOS_TARGET_S390X
+inline void S390XMachine::FillSimpleContext(StackTrace_SimpleContext * dest, LPVOID srcCtx) const
+{
+    TGT_CTXT& src = *(TGT_CTXT*) srcCtx;
+    dest->StackOffset = src.R15;
+    dest->FrameOffset = src.R11;
+    dest->InstructionOffset = src.PSWAddr;
+}
+
+inline void S390XMachine::FillTargetContext(LPVOID destCtx, LPVOID srcCtx, int idx /*= 0*/) const
+{
+    TGT_CTXT* dest = (TGT_CTXT*)destCtx + idx;
+    *dest = *(TGT_CTXT*)srcCtx;
+}
+#endif // SOS_TARGET_S390X
 
 #endif // __disasm_h__

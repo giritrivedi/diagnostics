@@ -74,6 +74,9 @@ case $cpuname in
   riscv64)
     buildarch=riscv64
     ;;
+  s390x)
+    buildarch=s390x
+    ;;
   *)
     echo "Unknown CPU $cpuname detected, treating it as x64"
     buildarch=x64

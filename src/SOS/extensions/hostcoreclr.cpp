@@ -89,6 +89,8 @@ namespace RuntimeHostingConstants
         "DOTNET_ROOT_RISCV64";
 #elif defined(HOST_LOONGARCH64)
         "DOTNET_ROOT_LOONGARCH64";
+#elif defined(HOST_S390X)
+        "DOTNET_ROOT_S390X";
 #else
         "Error";
 #error Hosting layer doesn't support target arch
@@ -113,6 +115,8 @@ namespace RuntimeHostingConstants
         "/etc/dotnet/install_location_riscv64";
 #elif defined(HOST_LOONGARCH64)
         "/etc/dotnet/install_location_loongarch64";
+#elif defined(HOST_S390X)
+        "/etc/dotnet/install_location_s390x";
 #else
         "ERROR";
 #error Hosting layer doesn't support target arch
